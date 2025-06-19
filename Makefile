@@ -2,34 +2,35 @@
 
 NAME = ircserv
 
-SRC = server.cpp Server_init.cpp Server_life.cpp  Client.cpp Channel.cpp \
-	 cmd_join.cpp cmd_privmsg.cpp cmd_kick.cpp debugger.cpp cmd_topic.cpp cmd_quit.cpp \
-	 cmd_invite.cpp cmd_part.cpp cmd_nick.cpp cmd_mode.cpp broadCast.cpp DCC.cpp cmd_poke.cpp
+SRC = server.cpp Server_init.cpp Server_life.cpp Client.cpp Channel.cpp \
+	cmd_join.cpp cmd_privmsg.cpp cmd_kick.cpp debugger.cpp cmd_topic.cpp cmd_quit.cpp \
+	cmd_invite.cpp cmd_part.cpp cmd_nick.cpp cmd_mode.cpp broadCast.cpp DCC.cpp cmd_poke.cpp
 
-FLOBJ	= $(SRC:.cpp=.o)
-DIROBJ	= obj/
-
-OBJ = $(addprefix $(DIROBJ),$(FLOBJ))
+OBJ_DIR = obj
+OBJ = $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
 CC = c++
-
 CFLAGS = -Wall -Wextra -Werror -std=c++98 -g
-
-$(DIROBJ)%.o: %.cpp
-	@echo "$(GREEN)Compiling:$(BLUE) $< $(DEF_COLOR)"
-	@$(CC) $(CFLAGS) -c $< -o $@
 
 ####### RULES ########
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@echo "$(MAGENTA)Program: $(WHITE)$(CC) $(CFLAGS) -o $(NAME) $(DEF_COLOR)"
+	@echo "$(MAGENTA)Linking: $(WHITE)$(CC) $(CFLAGS) -o $(NAME)$(DEF_COLOR)"
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
+	@echo "$(GREEN)✅ Build successful: $(WHITE)$(NAME)$(DEF_COLOR)"
+
+$(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
+	@echo "$(GREEN)Compiling: $(BLUE)$< $(DEF_COLOR)"
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
 	@echo "$(MAGENTA)Program name: $(WHITE)$(NAME)$(DEF_COLOR)"
 
 clean:
-	@rm -f $(OBJ)
+	@rm -rf $(DIROBJ)
 	@echo "$(RED)Objects removed: $(WHITE)$(OBJ)$(DEF_COLOR)"
 
 fclean: clean
@@ -38,7 +39,7 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all $(NAME) clean fclean re
+.PHONY: all clean fclean re
 
 ###### COLORS ########
 
